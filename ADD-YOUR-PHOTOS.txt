@@ -1,0 +1,41 @@
+====================================================
+  SARORA JEWELRY — HOW TO ADD YOUR PRODUCT PHOTOS
+====================================================
+
+Save your photos into the  images/  folder next to index.html,
+using these exact filenames:
+
+  images/hero.jpg          → The lifestyle rings-stacking photo (white top, two hands)
+                             OR the tray flat-lay — this is the big hero background
+
+  images/ring-wave.jpg     → The double wavy ring on finger (close-up)
+
+  images/ring-signet.jpg   → The bold angular/crossover signet ring
+
+  images/rings-stack.jpg   → The stacking lifestyle shot (two rings, two fingers)
+
+  images/bracelet.jpg      → The adjustable Byzantine chain bracelet (hanging on pine)
+
+  images/bracelet-clasp.jpg→ The SARORA clasp close-up (on grey stone)
+
+  images/pendant-moon.jpg  → The crescent moon pendant (worn on black top)
+
+  images/moon-closeup.jpg  → The dark background moon + signet dish shot
+
+  images/flatlay.jpg       → The ceramic tray flat-lay (all pieces together, light bg)
+
+  images/flatlay-dark.jpg  → The dark navy background flat-lay
+
+  images/logo.png          → The Sarora logo (white background with spiral mark)
+
+TIPS:
+- Any standard image format works: .jpg .jpeg .png .webp
+- Aim for square or portrait-oriented photos for the gallery tiles
+- Hero/product cards look best with portrait photos (taller than wide)
+- The website shows elegant placeholders wherever a photo is missing,
+  so you can add photos one at a time
+
+After saving the photos, just open index.html in your browser —
+no server needed, it works as a local file!
+
+====================================================

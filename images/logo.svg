@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <rect width="600" height="600" fill="#FAF8F3"/>
+  
+  <!-- Outer silver loops -->
+  <path d="M 220 80 C 130 80 80 140 80 210 C 80 300 140 360 220 360 C 270 360 300 340 300 300" 
+        stroke="#A8A8A0" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.8"/>
+  <path d="M 380 80 C 470 80 520 140 520 210 C 520 300 460 360 380 360 C 330 360 300 340 300 300"
+        stroke="#A8A8A0" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.8"/>
+        
+  <!-- Inner gold swirl -->
+  <path d="M 300 120 C 230 120 200 160 200 210 C 200 270 240 310 300 310 C 360 310 400 270 400 210 C 400 170 370 150 340 155 C 310 158 295 178 300 210 C 305 240 330 250 350 240"
+        stroke="#C9A84C" stroke-width="9" fill="none" stroke-linecap="round"/>
+        
+  <!-- Center accent dot -->
+  <circle cx="350" cy="240" r="12" fill="#C9A84C"/>
+  <circle cx="350" cy="240" r="7" fill="#E8CE84"/>
+
+  <!-- SARORA text -->
+  <text x="300" y="430" font-family="Georgia, serif" font-size="72" font-weight="bold"
+        letter-spacing="18" text-anchor="middle" fill="#3D2010">SARORA</text>
+        
+  <!-- JEWELRY BRAND text -->
+  <text x="300" y="480" font-family="Georgia, serif" font-size="22"
+        letter-spacing="10" text-anchor="middle" fill="#9E7A2E" opacity="0.85">JEWELRY</text>
+</svg>
