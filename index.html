@@ -4,11 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Sarora Jewelry – Let Your Jewelry Speak Volumes</title>
+  <!-- Apex currently serves http:// with 200 (no server redirect). Send visitors to HTTPS immediately. -->
+  <script>
+  (function () {
+    if (location.protocol !== 'http:') return;
+    var h = location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1' || h === '[::1]') return;
+    if (h === 'sarorajewelry.com' || h === 'www.sarorajewelry.com' || /\.github\.io$/i.test(h)) {
+      location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+    }
+  })();
+  </script>
+  <link rel="canonical" href="https://sarorajewelry.com/" />
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <meta name="description" content="Sarora Jewelry – Premium gold jewelry. Rings, necklaces, pendants, bracelets & earrings. USA based, worldwide shipping." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- If the site is served over HTTPS, upgrade any accidental http subresources -->
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,8 +96,9 @@
       letter-spacing: .18em; color: var(--brown-deep); line-height: 1;
     }
     .nav-logo-sub {
-      font-size: 8px; font-weight: 400; letter-spacing: .45em;
+      font-size: 8px; font-weight: 400; letter-spacing: 0.14em;
       color: var(--gold-dark); text-transform: uppercase; margin-top: 2px;
+      white-space: nowrap;
     }
 
     .nav-links { display: flex; gap: 36px; list-style: none; }
@@ -142,11 +157,18 @@
       overflow: hidden;
     }
     .hero-image-side img {
-      width: 100%; height: 100%; object-fit: cover;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       object-position: center top;
     }
     .hero-image-overlay {
       position: absolute; inset: 0;
+      z-index: 1;
+      pointer-events: none;
       background: linear-gradient(to right, transparent 60%, var(--cream) 100%);
     }
 
@@ -614,7 +636,7 @@
       font-size: 28px; font-weight: 600; letter-spacing: .18em;
       color: var(--brown-deep); margin-bottom: 4px;
     }
-    .footer-logo-sub { font-size: 9px; font-weight: 400; letter-spacing: .45em; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 20px; }
+    .footer-logo-sub { font-size: 9px; font-weight: 400; letter-spacing: 0.14em; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 20px; white-space: nowrap; }
     .footer-tagline {
       font-family: 'Cormorant Garamond', serif;
       font-size: 16px; font-style: italic; font-weight: 300;
@@ -745,7 +767,7 @@
       .hero-image-side {
         flex: 0 0 auto;
         width: 100%;
-        min-height: unset;
+        min-height: 0;
         height: clamp(220px, 38vh, 360px);
         max-height: 360px;
       }
@@ -948,7 +970,16 @@
 <!-- ===== HERO ===== -->
 <section class="hero" id="home">
   <div class="hero-image-side">
-    <img src="images/hero.jpg" alt="Sarora Jewelry" style="width:100%;height:100%;object-fit:cover;object-position:center top;" onerror="this.style.display='none'" />
+    <img
+      src="images/hero.jpg"
+      alt="Sarora Jewelry"
+      width="1200"
+      height="1600"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      onerror="this.onerror=null;this.src='images/flatlay.jpg';"
+    />
     <div class="hero-image-overlay"></div>
   </div>
   <div class="hero-content">
