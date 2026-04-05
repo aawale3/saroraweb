@@ -922,13 +922,34 @@
       .hero-scroll {
         display: none;
       }
+      /* One horizontal strip (not stacked “columns”); tight type so three fit on small screens */
       .hero-badges {
-        flex-direction: column; gap: 0;
-        width: 100%; max-width: 100%;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: stretch;
+        align-items: stretch;
+        gap: 0;
+        width: 100%;
+        max-width: 100%;
         align-self: stretch;
+        border: 1px solid var(--border);
+        margin-bottom: 28px;
       }
-      .hero-badge { border-right: none !important; border-bottom: 1px solid var(--border); }
-      .hero-badge:last-child { border-bottom: none; }
+      .hero-badge {
+        flex: 1 1 0;
+        min-width: 0;
+        text-align: center;
+        padding: 12px 6px;
+        font-size: clamp(7px, 2.1vw, 9px);
+        letter-spacing: 0.08em;
+        line-height: 1.35;
+        border-right: 1px solid var(--border) !important;
+        border-bottom: none !important;
+        box-sizing: border-box;
+      }
+      .hero-badge:last-child {
+        border-right: none !important;
+      }
       .about-content {
         padding: 48px max(24px, var(--safe-left)) 48px max(24px, var(--safe-right));
       }
