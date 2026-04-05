@@ -1413,14 +1413,27 @@ const io=new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersect
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
 /* ===== WAITLIST ===== */
+/** Paste your Google Apps Script Web App URL after deploying (see apps-script/WAITLIST_SETUP.md). Leave '' to save signups in the browser only. */
+const WAITLIST_API_URL = 'https://script.google.com/a/macros/sarorajewelry.com/s/AKfycbwCDiOTzQnoeTtFxMMcblJcP94KaY-ilR-B7fz1fp1fhK2AZcqiwhkS-bmpN5Un967i/exec';
+
 let waitlistData=JSON.parse(localStorage.getItem('sarora_waitlist')||'[]');
 document.getElementById('waitlistCount').textContent=247+waitlistData.length;
 
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4000); }
 
-function submitWaitlist(e){
+function finishWaitlistSuccess(fn,ln,em,interest){
+  waitlistData.push({ firstName:fn, lastName:ln, email:em, interest:interest, joinedAt:new Date().toISOString() });
+  localStorage.setItem('sarora_waitlist',JSON.stringify(waitlistData));
+  document.getElementById('waitlistCount').textContent=247+waitlistData.length;
+  document.getElementById('waitlistForm').style.display='none';
+  document.getElementById('successPanel').classList.add('show');
+  showToast('Welcome to Sarora! You\'re on the list ✦');
+}
+
+async function submitWaitlist(e){
   e.preventDefault();
   const fn=document.getElementById('firstName'), ln=document.getElementById('lastName'), em=document.getElementById('email');
+  const interestEl=document.getElementById('interest');
   let valid=true;
   ['firstNameError','lastNameError','emailError'].forEach(id=>document.getElementById(id).textContent='');
   [fn,ln,em].forEach(el=>el.classList.remove('error'));
@@ -1429,15 +1442,40 @@ function submitWaitlist(e){
   if(!em.value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)){ document.getElementById('emailError').textContent='Please enter a valid email.'; em.classList.add('error'); valid=false; }
   if(!valid) return;
   if(waitlistData.find(r=>r.email.toLowerCase()===em.value.toLowerCase())){ showToast("You're already on the waitlist! ✦"); return; }
-  const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Adding you...';
-  setTimeout(()=>{
-    waitlistData.push({ firstName:fn.value.trim(), lastName:ln.value.trim(), email:em.value.trim(), interest:document.getElementById('interest').value, joinedAt:new Date().toISOString() });
-    localStorage.setItem('sarora_waitlist',JSON.stringify(waitlistData));
-    document.getElementById('waitlistCount').textContent=247+waitlistData.length;
-    document.getElementById('waitlistForm').style.display='none';
-    document.getElementById('successPanel').classList.add('show');
-    showToast('Welcome to Sarora! You\'re on the list ✦');
-  },900);
+
+  const f=fn.value.trim(), l=ln.value.trim(), mail=em.value.trim(), intr=interestEl.value;
+  const btn=document.getElementById('submitBtn');
+
+  if(WAITLIST_API_URL){
+    btn.disabled=true; btn.textContent='Adding you...';
+    try{
+      const res=await fetch(WAITLIST_API_URL,{
+        method:'POST',
+        mode:'cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({ firstName:f, lastName:l, email:mail, interest:intr, source:'saroraweb' })
+      });
+      const raw=await res.text();
+      let json=null;
+      try{ json=JSON.parse(raw); }catch(_){ /* response was HTML e.g. sign-in page, not JSON */ }
+      if(!res.ok||!json||json.status!=='success'){
+        throw new Error((json&&json.message)||'Server did not confirm your signup (wrong URL, sign-in required, or network issue).');
+      }
+      finishWaitlistSuccess(f,l,mail,intr);
+      if(json.emailSent===false){
+        showToast('You\'re on the list. We could not send the confirmation email — check spam, or try a different address.');
+      }
+    }catch(err){
+      console.error(err);
+      showToast(err.message||'Could not submit. Check connection or try again.');
+    }finally{
+      btn.disabled=false; btn.textContent='Join the Waitlist ✦';
+    }
+    return;
+  }
+
+  btn.disabled=true; btn.textContent='Adding you...';
+  setTimeout(()=>{ finishWaitlistSuccess(f,l,mail,intr); btn.disabled=false; btn.textContent='Join the Waitlist ✦'; },600);
 }
 
 /* ===== COUNTDOWN ===== */
