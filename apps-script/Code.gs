@@ -26,8 +26,14 @@ var PUBLIC_SITE_URL = 'https://www.sarorajewelry.com';
 var INSTAGRAM_URL = 'https://www.instagram.com/sarorajewelry/';
 
 /**
- * Try these URLs in order until one returns the PNG. Inline-embed in email (cid:logo)
- * so the image works even when the custom domain isn’t live or clients block remote images.
+ * Optional: Google Drive file ID for your logo (from the link …/file/d/THIS_ID/view).
+ * The script runs as you, so the file must be in Drive you can open. Prefer uploading a PNG;
+ * SVG often does not display in Gmail and other clients when embedded.
+ */
+var LOGO_DRIVE_FILE_ID = '1sW8ArxfTbel4ysh2arDgUp6HSlSnC8AI';
+
+/**
+ * Fallback URLs if Drive isn’t used or fails. Inline-embed in email (cid:logo).
  */
 var LOGO_IMAGE_URLS = [
   'https://raw.githubusercontent.com/aawale3/saroraweb/main/images/logo.png',
@@ -35,6 +41,18 @@ var LOGO_IMAGE_URLS = [
 ];
 
 function fetchLogoBlob_() {
+  if (LOGO_DRIVE_FILE_ID && String(LOGO_DRIVE_FILE_ID).length > 10) {
+    try {
+      var file = DriveApp.getFileById(LOGO_DRIVE_FILE_ID);
+      var blob = file.getBlob();
+      if (blob && blob.getBytes().length > 50) {
+        var fname = file.getName() || 'logo.png';
+        return blob.setName(fname);
+      }
+    } catch (err) {
+      Logger.log('Drive logo failed: ' + err.message);
+    }
+  }
   for (var i = 0; i < LOGO_IMAGE_URLS.length; i++) {
     try {
       var r = UrlFetchApp.fetch(LOGO_IMAGE_URLS[i], {
