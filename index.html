@@ -1505,15 +1505,32 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 /** Paste your Google Apps Script Web App URL after deploying (see apps-script/WAITLIST_SETUP.md). Leave '' to save signups in the browser only. */
 const WAITLIST_API_URL = 'https://script.google.com/macros/s/AKfycbwCDiOTzQnoeTtFxMMcblJcP94KaY-ilR-B7fz1fp1fhK2AZcqiwhkS-bmpN5Un967i/exec';
 
-let waitlistData=JSON.parse(localStorage.getItem('sarora_waitlist')||'[]');
-document.getElementById('waitlistCount').textContent=247+waitlistData.length;
+/** Public “already waiting” number before this device’s signups; total = base + unique emails in local list */
+const WAITLIST_BASE_COUNT = 247;
+
+let waitlistData = JSON.parse(localStorage.getItem('sarora_waitlist') || '[]');
+
+function getWaitlistLocalSignupCount() {
+  const seen = new Set();
+  (waitlistData || []).forEach(function (r) {
+    if (r && r.email) seen.add(String(r.email).trim().toLowerCase());
+  });
+  return seen.size;
+}
+
+function updateWaitlistCountDisplay() {
+  const el = document.getElementById('waitlistCount');
+  if (el) el.textContent = String(WAITLIST_BASE_COUNT + getWaitlistLocalSignupCount());
+}
+
+updateWaitlistCountDisplay();
 
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4000); }
 
 function finishWaitlistSuccess(fn,ln,em,interest){
   waitlistData.push({ firstName:fn, lastName:ln, email:em, interest:interest, joinedAt:new Date().toISOString() });
   localStorage.setItem('sarora_waitlist',JSON.stringify(waitlistData));
-  document.getElementById('waitlistCount').textContent=247+waitlistData.length;
+  updateWaitlistCountDisplay();
   document.getElementById('waitlistForm').style.display='none';
   document.getElementById('successPanel').classList.add('show');
   showToast('Welcome to Sarora! You\'re on the list ✦');
