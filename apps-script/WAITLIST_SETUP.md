@@ -40,7 +40,7 @@ Check the **Waitlist** tab in your Sheet — you should see a test row.
    - **Description**: e.g. `Sarora waitlist v1`
    - **Execute as**: **Me**
    - **Who has access**: **Anyone** (required so the public site can POST without login)
-4. **Deploy** → copy the **Web app URL** (looks like `https://script.google.com/macros/s/.../exec`).
+4. **Deploy** → copy the **Web app URL** (looks like `https://script.google.com/macros/s/.../exec`). Prefer this **public** `/macros/s/` URL for a public website. Workspace-only URLs like `script.google.com/a/macros/yourdomain.com/...` often require sign-in and will break anonymous form posts.
 
 ## 5. Connect the website
 
