@@ -1505,10 +1505,12 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 /** Paste your Google Apps Script Web App URL after deploying (see apps-script/WAITLIST_SETUP.md). Leave '' to save signups in the browser only. */
 const WAITLIST_API_URL = 'https://script.google.com/macros/s/AKfycbwCDiOTzQnoeTtFxMMcblJcP94KaY-ilR-B7fz1fp1fhK2AZcqiwhkS-bmpN5Un967i/exec';
 
-/** Public “already waiting” number before this device’s signups; total = base + unique emails in local list */
+/** Marketing floor; live total = base + rows in the Sheet (see GET ?stats=count). Falls back to base + local signups if stats unavailable. */
 const WAITLIST_BASE_COUNT = 247;
 
 let waitlistData = JSON.parse(localStorage.getItem('sarora_waitlist') || '[]');
+/** null = not loaded yet or failed; number = row count from Apps Script (excludes header) */
+let waitlistServerCount = null;
 
 function getWaitlistLocalSignupCount() {
   const seen = new Set();
@@ -1520,10 +1522,39 @@ function getWaitlistLocalSignupCount() {
 
 function updateWaitlistCountDisplay() {
   const el = document.getElementById('waitlistCount');
-  if (el) el.textContent = String(WAITLIST_BASE_COUNT + getWaitlistLocalSignupCount());
+  if (!el) return;
+  if (waitlistServerCount !== null && waitlistServerCount >= 0) {
+    el.textContent = String(WAITLIST_BASE_COUNT + waitlistServerCount);
+  } else {
+    el.textContent = String(WAITLIST_BASE_COUNT + getWaitlistLocalSignupCount());
+  }
 }
 
-updateWaitlistCountDisplay();
+async function fetchWaitlistServerCount() {
+  if (!WAITLIST_API_URL) return null;
+  try {
+    const res = await fetch(WAITLIST_API_URL + '?stats=count', { mode: 'cors', cache: 'no-store' });
+    const raw = await res.text();
+    let json = null;
+    try {
+      json = JSON.parse(raw);
+    } catch (_) {}
+    if (json && json.status === 'ok' && typeof json.count === 'number') {
+      return json.count;
+    }
+  } catch (err) {
+    console.warn('Waitlist stats fetch failed:', err);
+  }
+  return null;
+}
+
+async function refreshWaitlistCountFromServer() {
+  const n = await fetchWaitlistServerCount();
+  if (n !== null) waitlistServerCount = n;
+  updateWaitlistCountDisplay();
+}
+
+void refreshWaitlistCountFromServer();
 
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4000); }
 
@@ -1534,6 +1565,7 @@ function finishWaitlistSuccess(fn,ln,em,interest){
   document.getElementById('waitlistForm').style.display='none';
   document.getElementById('successPanel').classList.add('show');
   showToast('Welcome to Sarora! You\'re on the list ✦');
+  void refreshWaitlistCountFromServer();
 }
 
 async function submitWaitlist(e){
