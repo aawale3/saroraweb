@@ -21,6 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="images/hero.jpg" fetchpriority="high" />
   <!-- If the site is served over HTTPS, upgrade any accidental http subresources -->
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
@@ -95,11 +96,20 @@
       font-size: 22px; font-weight: 600;
       letter-spacing: .18em; color: var(--brown-deep); line-height: 1;
     }
+    /* Letter-spacing on whole line stretched gaps between words; apply tracking per word only */
     .nav-logo-sub {
-      font-size: 8px; font-weight: 400; letter-spacing: 0.14em;
-      color: var(--gold-dark); text-transform: uppercase; margin-top: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35em;
+      font-size: 9px;
+      font-weight: 400;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      margin-top: 2px;
       white-space: nowrap;
     }
+    .logo-sub-part { letter-spacing: 0.45em; }
+    .logo-sub-sep { letter-spacing: 0; flex-shrink: 0; opacity: 0.92; }
 
     .nav-links { display: flex; gap: 36px; list-style: none; }
     .nav-links a {
@@ -153,17 +163,14 @@
     }
     .hero-image-side {
       flex: 1; position: relative; min-height: 100vh;
-      background: var(--cream-dark);
       overflow: hidden;
-    }
-    .hero-image-side img {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      background-color: var(--cream-dark);
+      /* CSS background paints reliably on mobile WebViews; <img> alone was flaky in Safari */
+      background-image: url('images/hero.jpg');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      -webkit-transform: translateZ(0);
     }
     .hero-image-overlay {
       position: absolute; inset: 0;
@@ -636,7 +643,17 @@
       font-size: 28px; font-weight: 600; letter-spacing: .18em;
       color: var(--brown-deep); margin-bottom: 4px;
     }
-    .footer-logo-sub { font-size: 9px; font-weight: 400; letter-spacing: 0.14em; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 20px; white-space: nowrap; }
+    .footer-logo-sub {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35em;
+      font-size: 9px;
+      font-weight: 400;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
     .footer-tagline {
       font-family: 'Cormorant Garamond', serif;
       font-size: 16px; font-style: italic; font-weight: 300;
@@ -944,7 +961,11 @@
          onerror="this.src='images/logo.png'" />
     <div class="nav-logo-text">
       <span class="nav-logo-name">SARORA</span>
-      <span class="nav-logo-sub">Jewelry · USA</span>
+      <span class="nav-logo-sub">
+        <span class="logo-sub-part">Jewelry</span>
+        <span class="logo-sub-sep" aria-hidden="true">·</span>
+        <span class="logo-sub-part">USA</span>
+      </span>
     </div>
   </a>
 
@@ -969,17 +990,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="home">
-  <div class="hero-image-side">
-    <img
-      src="images/hero.jpg"
-      alt="Sarora Jewelry"
-      width="1200"
-      height="1600"
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-      onerror="this.onerror=null;this.src='images/flatlay.jpg';"
-    />
+  <div class="hero-image-side" role="img" aria-label="Sarora Jewelry hero photograph">
     <div class="hero-image-overlay"></div>
   </div>
   <div class="hero-content">
@@ -1372,7 +1383,13 @@
   <div class="footer-grid">
     <div>
       <div class="footer-logo-name">SARORA</div>
-      <div class="footer-logo-sub">Jewelry · Est. USA</div>
+      <div class="footer-logo-sub">
+        <span class="logo-sub-part">Jewelry</span>
+        <span class="logo-sub-sep" aria-hidden="true">·</span>
+        <span class="logo-sub-part">Est.</span>
+        <span class="logo-sub-sep" aria-hidden="true">·</span>
+        <span class="logo-sub-part">USA</span>
+      </div>
       <div class="footer-tagline">"Let your jewelry speak volumes."</div>
       <div class="footer-shipping">🇺🇸 USA Based &nbsp;·&nbsp; 🌍 Worldwide Shipping<br>Launching soon — join the waitlist above</div>
     </div>
@@ -1428,6 +1445,17 @@
     el.addEventListener('mouseenter',()=>{ cursor.style.width='14px'; cursor.style.height='14px'; cursorRing.style.width='48px'; cursorRing.style.height='48px'; });
     el.addEventListener('mouseleave',()=>{ cursor.style.width='8px'; cursor.style.height='8px'; cursorRing.style.width='32px'; cursorRing.style.height='32px'; });
   });
+})();
+
+/* ===== HERO BG FALLBACK (if hero.jpg missing) ===== */
+(function () {
+  var el = document.querySelector('.hero-image-side');
+  if (!el) return;
+  var probe = new Image();
+  probe.onerror = function () {
+    el.style.backgroundImage = "url('images/flatlay.jpg')";
+  };
+  probe.src = 'images/hero.jpg';
 })();
 
 /* ===== NAV ===== */
