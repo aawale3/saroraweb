@@ -22,7 +22,8 @@ Copy **only** the long ID between `/d/` and `/edit`.
 2. Delete any default `Code.gs` content and paste the contents of **`apps-script/Code.gs`** from this repo.
 3. Replace `PASTE_YOUR_NEW_GOOGLE_SHEET_ID_HERE` with your **Sheet ID** (step 2).
 4. Optional: set `NOTIFY_EMAIL` to your team address if you want an internal copy of each signup.
-5. **Save** (Ctrl/Cmd + S).
+5. Set `PUBLIC_SITE_URL` in `Code.gs` to your live site (no trailing slash), e.g. `https://www.sarorajewelry.com` or your GitHub Pages URL — used for the logo (`/images/logo.png`) and **Website** link in confirmation emails. Adjust `INSTAGRAM_URL` if needed.
+6. **Save** (Ctrl/Cmd + S).
 
 ### First-time authorization
 

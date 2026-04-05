@@ -20,6 +20,105 @@ var SHEET_NAME = 'Waitlist';
 /** Optional: your team email for a BCC or separate log email (leave '' to skip) */
 var NOTIFY_EMAIL = '';
 
+/** Public site base URL (no trailing slash) — logo + footer links in emails */
+var PUBLIC_SITE_URL = 'https://www.sarorajewelry.com';
+
+var INSTAGRAM_URL = 'https://www.instagram.com/sarorajewelry/';
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** Human label for waitlist interest (matches form values in index.html) */
+function interestCopy(interestKey) {
+  var k = (interestKey || '').toLowerCase();
+  if (k === 'all' || k === '')
+    return {
+      isAll: true,
+      label: 'all our collections',
+    };
+  var labels = {
+    rings: 'Rings',
+    necklaces: 'Necklaces',
+    pendants: 'Pendants',
+    bracelets: 'Bracelets',
+    earrings: 'Earrings',
+  };
+  return {
+    isAll: false,
+    label: labels[k] || interestKey,
+  };
+}
+
+function buildWaitlistEmailHtml(firstName, interestKey) {
+  var safeName = escapeHtml(firstName);
+  var ic = interestCopy(interestKey);
+  var interestParagraph = ic.isAll
+    ? "We noticed you’re interested in <strong>all our collections</strong>—which means you’re going to get the ultimate VIP treatment. We’re working hard behind the scenes, and we promise the wait will be worth it."
+    : "We noticed you’re especially excited about <strong>" +
+      escapeHtml(ic.label) +
+      '</strong>—thank you for telling us. We’re working hard behind the scenes, and we promise the wait will be worth it.';
+
+  var logoUrl = PUBLIC_SITE_URL + '/images/logo.png';
+  return (
+    '<div style="margin:0;padding:0;background-color:#FAF8F3;font-family:Georgia,Times,serif;color:#1E0F06;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F3;padding:32px 16px;">' +
+    '<tr><td align="center">' +
+    '<table role="presentation" width="100%" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid rgba(201,168,76,0.22);">' +
+    '<tr><td style="padding:40px 36px 32px;text-align:center;">' +
+    '<img src="' +
+    logoUrl +
+    '" alt="Sarora Jewelry" width="140" height="auto" style="max-width:160px;height:auto;display:inline-block;margin-bottom:28px;" />' +
+    '<p style="margin:0 0 20px;font-size:17px;line-height:1.6;text-align:left;font-family:Arial,Helvetica,sans-serif;">Hi ' +
+    safeName +
+    ',</p>' +
+    '<p style="margin:0 0 18px;font-size:15px;line-height:1.75;text-align:left;font-family:Arial,Helvetica,sans-serif;color:#4A2E1A;">We’re so thrilled you’re here! Thank you for joining the waitlist for <strong>Sarora Jewelry</strong>.</p>' +
+    '<p style="margin:0 0 18px;font-size:15px;line-height:1.75;text-align:left;font-family:Arial,Helvetica,sans-serif;color:#4A2E1A;">' +
+    interestParagraph +
+    '</p>' +
+    '<p style="margin:0 0 18px;font-size:15px;line-height:1.75;text-align:left;font-family:Arial,Helvetica,sans-serif;color:#4A2E1A;">Keep an eye on your inbox. We’ll notify you the exact second our early access doors open so you can shop before anyone else.</p>' +
+    '<p style="margin:24px 0 0;font-size:15px;line-height:1.6;text-align:left;font-family:Arial,Helvetica,sans-serif;color:#4A2E1A;">Talk soon,<br /><strong>Sarora Jewelry</strong></p>' +
+    '</td></tr>' +
+    '<tr><td style="padding:0 36px 36px;text-align:center;border-top:1px solid rgba(201,168,76,0.25);">' +
+    '<p style="margin:20px 0 0;font-size:12px;letter-spacing:0.12em;font-family:Arial,Helvetica,sans-serif;">' +
+    '<a href="' +
+    PUBLIC_SITE_URL +
+    '" style="color:#9E7A2E;text-decoration:none;">Website</a>' +
+    ' &nbsp;|&nbsp; ' +
+    '<a href="' +
+    INSTAGRAM_URL +
+    '" style="color:#9E7A2E;text-decoration:none;">Instagram</a>' +
+    '</p>' +
+    '</td></tr></table></td></tr></table></div>'
+  );
+}
+
+function buildWaitlistEmailPlain(firstName, interestKey) {
+  var ic = interestCopy(interestKey);
+  var mid = ic.isAll
+    ? "We noticed you're interested in all our collections—which means you're going to get the ultimate VIP treatment."
+    : "We're especially glad you shared your interest in " + ic.label + '.';
+  return (
+    'Hi ' +
+    firstName +
+    ',\n\n' +
+    "We're so thrilled you're here! Thank you for joining the waitlist for Sarora Jewelry.\n\n" +
+    mid +
+    '\n\n' +
+    "Keep an eye on your inbox. We'll notify you the exact second our early access doors open.\n\n" +
+    'Talk soon,\n' +
+    'Sarora Jewelry\n\n' +
+    PUBLIC_SITE_URL +
+    ' | ' +
+    INSTAGRAM_URL
+  );
+}
+
 function doGet(e) {
   return HtmlService.createHtmlOutput(
     '<h2>Sarora Waitlist API</h2>' +
@@ -81,22 +180,13 @@ function doPost(e) {
 
     var displayName = firstName + ' ' + lastName;
     var subject = "You're on the Sarora waitlist ✦";
-    var htmlBody =
-      '<p>Hi ' +
-      firstName +
-      ',</p>' +
-      '<p>Thanks for joining the waitlist for Sarora Jewelry. We’ll let you know as soon as early access opens.</p>' +
-      (interest
-        ? '<p><strong>Collection interest:</strong> ' +
-          interest +
-          '</p>'
-        : '') +
-      '<p>— Sarora Jewelry</p>';
+    var htmlBody = buildWaitlistEmailHtml(firstName, interest);
+    var plainBody = buildWaitlistEmailPlain(firstName, interest);
 
     /** Send mail in its own try/catch so a quota or policy error still returns success after the row is saved */
     var emailSent = false;
     try {
-      GmailApp.sendEmail(email, subject, '', { htmlBody: htmlBody });
+      GmailApp.sendEmail(email, subject, plainBody, { htmlBody: htmlBody });
       emailSent = true;
     } catch (mailErr) {
       Logger.log('GmailApp.sendEmail failed: ' + mailErr.message);
