@@ -25,6 +25,35 @@ var PUBLIC_SITE_URL = 'https://www.sarorajewelry.com';
 
 var INSTAGRAM_URL = 'https://www.instagram.com/sarorajewelry/';
 
+/**
+ * Try these URLs in order until one returns the PNG. Inline-embed in email (cid:logo)
+ * so the image works even when the custom domain isn’t live or clients block remote images.
+ */
+var LOGO_IMAGE_URLS = [
+  'https://raw.githubusercontent.com/aawale3/saroraweb/main/images/logo.png',
+  'https://www.sarorajewelry.com/images/logo.png',
+];
+
+function fetchLogoBlob_() {
+  for (var i = 0; i < LOGO_IMAGE_URLS.length; i++) {
+    try {
+      var r = UrlFetchApp.fetch(LOGO_IMAGE_URLS[i], {
+        muteHttpExceptions: true,
+        followRedirects: true,
+      });
+      if (r.getResponseCode() === 200) {
+        var b = r.getBlob();
+        if (b && b.getBytes().length > 200) {
+          return b.setName('logo.png');
+        }
+      }
+    } catch (err) {
+      Logger.log('Logo fetch failed: ' + LOGO_IMAGE_URLS[i] + ' — ' + err.message);
+    }
+  }
+  return null;
+}
+
 function escapeHtml(s) {
   if (s === null || s === undefined) return '';
   return String(s)
@@ -55,7 +84,7 @@ function interestCopy(interestKey) {
   };
 }
 
-function buildWaitlistEmailHtml(firstName, interestKey) {
+function buildWaitlistEmailHtml(firstName, interestKey, hasInlineLogo) {
   var safeName = escapeHtml(firstName);
   var ic = interestCopy(interestKey);
   var interestParagraph = ic.isAll
@@ -64,16 +93,17 @@ function buildWaitlistEmailHtml(firstName, interestKey) {
       escapeHtml(ic.label) +
       '</strong>—thank you for telling us. We’re working hard behind the scenes, and we promise the wait will be worth it.';
 
-  var logoUrl = PUBLIC_SITE_URL + '/images/logo.png';
+  var logoBlock = hasInlineLogo
+    ? '<img src="cid:logo" alt="Sarora Jewelry" width="140" style="max-width:160px;height:auto;display:inline-block;margin-bottom:28px;border:0;" />'
+    : '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:22px;letter-spacing:0.28em;color:#1E0F06;margin-bottom:24px;font-weight:600;">SARORA</div>';
+
   return (
     '<div style="margin:0;padding:0;background-color:#FAF8F3;font-family:Georgia,Times,serif;color:#1E0F06;">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F3;padding:32px 16px;">' +
     '<tr><td align="center">' +
     '<table role="presentation" width="100%" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid rgba(201,168,76,0.22);">' +
     '<tr><td style="padding:40px 36px 32px;text-align:center;">' +
-    '<img src="' +
-    logoUrl +
-    '" alt="Sarora Jewelry" width="140" height="auto" style="max-width:160px;height:auto;display:inline-block;margin-bottom:28px;" />' +
+    logoBlock +
     '<p style="margin:0 0 20px;font-size:17px;line-height:1.6;text-align:left;font-family:Arial,Helvetica,sans-serif;">Hi ' +
     safeName +
     ',</p>' +
@@ -180,13 +210,18 @@ function doPost(e) {
 
     var displayName = firstName + ' ' + lastName;
     var subject = "You're on the Sarora waitlist ✦";
-    var htmlBody = buildWaitlistEmailHtml(firstName, interest);
+    var logoBlob = fetchLogoBlob_();
+    var htmlBody = buildWaitlistEmailHtml(firstName, interest, !!logoBlob);
     var plainBody = buildWaitlistEmailPlain(firstName, interest);
 
     /** Send mail in its own try/catch so a quota or policy error still returns success after the row is saved */
     var emailSent = false;
     try {
-      GmailApp.sendEmail(email, subject, plainBody, { htmlBody: htmlBody });
+      var mailOpts = { htmlBody: htmlBody };
+      if (logoBlob) {
+        mailOpts.inlineImages = { logo: logoBlob };
+      }
+      GmailApp.sendEmail(email, subject, plainBody, mailOpts);
       emailSent = true;
     } catch (mailErr) {
       Logger.log('GmailApp.sendEmail failed: ' + mailErr.message);

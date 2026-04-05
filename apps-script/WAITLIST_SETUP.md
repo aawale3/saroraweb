@@ -66,6 +66,7 @@ If the URL is left empty (`''`), the form keeps the old behavior (localStorage o
 | **403 / permission** | Redeploy Web App after code changes; use **New deployment** version. |
 | **CORS / blocked request** | Ensure deployment is **Anyone**. Try incognito. Some ad blockers block `script.google.com`. |
 | **Email not sent** | Gmail quota (daily limits); check spam; verify `GmailApp` authorization. |
+| **Logo missing in email** | The script now **embeds** `logo.png` inline (`cid:logo`) after fetching it from `LOGO_IMAGE_URLS` (GitHub raw first, then your domain). Redeploy after updating `Code.gs`. If both URLs fail, the template shows a **SARORA** text header instead. |
 
 ## Sheet columns (auto-created)
 
