@@ -199,6 +199,8 @@
       font-size: 10px; font-weight: 500; letter-spacing: .5em;
       color: var(--gold-dark); text-transform: uppercase; margin-bottom: 28px;
       display: flex; align-items: center; gap: 10px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
       opacity: 0; animation: fadeUp .8s .2s forwards;
     }
     .hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: var(--gold); flex-shrink: 0; }
@@ -792,6 +794,10 @@
       .hero-image-side .hero-image-photo {
         object-position: center center;
       }
+      .hero-eyebrow {
+        font-size: clamp(8px, 0.65vw + 6px, 10px);
+        letter-spacing: 0.32em;
+      }
       .about-section { flex-direction: column; }
       .about-photo { width: 100%; min-height: 400px; }
       .about-content {
@@ -872,14 +878,16 @@
       .hero-eyebrow {
         flex-direction: row;
         align-items: center;
-        gap: 10px;
-        letter-spacing: 0.22em;
-        line-height: 1.35;
+        gap: 8px;
+        letter-spacing: 0.16em;
+        line-height: 1.2;
         margin-bottom: 22px;
-        max-width: 100%;
+        max-width: none;
+        font-size: clamp(7px, 2.35vw, 10px);
       }
       .hero-eyebrow::before {
-        width: 40px;
+        width: 28px;
+        flex-shrink: 0;
       }
       .hero-title {
         font-size: clamp(36px, 10.5vw, 52px);
