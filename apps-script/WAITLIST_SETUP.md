@@ -60,6 +60,7 @@ If the URL is left empty (`''`), the form keeps the old behavior (localStorage o
 
 | Issue | What to try |
 |--------|-------------|
+| **“Load failed” / fetch error in the browser** | The site sends **`application/x-www-form-urlencoded`** (not JSON) so browsers don’t block the request with CORS preflight. Use the latest `index.html` + `Code.gs`. Redeploy the script after updating `Code.gs`. |
 | **Script fails to open sheet** | Sheet ID wrong, or Sheet not shared with the Google account that owns the script. |
 | **403 / permission** | Redeploy Web App after code changes; use **New deployment** version. |
 | **CORS / blocked request** | Ensure deployment is **Anyone**. Try incognito. Some ad blockers block `script.google.com`. |

@@ -23,19 +23,32 @@ var NOTIFY_EMAIL = '';
 function doGet(e) {
   return HtmlService.createHtmlOutput(
     '<h2>Sarora Waitlist API</h2>' +
-      '<p>Web app is running. POST JSON from the Sarora website waitlist form.</p>' +
-      '<p>Expected JSON keys: firstName, lastName, email, interest</p>'
+      '<p>Web app is running.</p>' +
+      '<p>POST <code>application/x-www-form-urlencoded</code> (recommended) or JSON body with: firstName, lastName, email, interest</p>'
   );
+}
+
+/** Form POST fills e.parameter; JSON POST uses postData.contents — support both */
+function loadPayload(e) {
+  if (!e) throw new Error('No event object');
+  if (e.parameter && (e.parameter.email || e.parameter.firstName)) {
+    return {
+      firstName: String(e.parameter.firstName || ''),
+      lastName: String(e.parameter.lastName || ''),
+      email: String(e.parameter.email || ''),
+      interest: String(e.parameter.interest || ''),
+      source: String(e.parameter.source || 'saroraweb'),
+    };
+  }
+  if (e.postData && e.postData.contents) {
+    return JSON.parse(e.postData.contents);
+  }
+  throw new Error('No POST data (use form fields or JSON body).');
 }
 
 function doPost(e) {
   try {
-    if (!e || !e.postData || !e.postData.contents) {
-      throw new Error('No POST data. Send JSON in the request body.');
-    }
-
-    var raw = e.postData.contents;
-    var data = JSON.parse(raw);
+    var data = loadPayload(e);
 
     var firstName = (data.firstName || '').trim();
     var lastName = (data.lastName || '').trim();
@@ -118,17 +131,15 @@ function jsonOut(obj) {
   );
 }
 
-/** Run from Apps Script editor to verify script + sheet ID */
+/** Run from Apps Script editor — mimics browser form POST */
 function testDoPost() {
   var e = {
-    postData: {
-      contents: JSON.stringify({
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'you@example.com',
-        interest: 'rings',
-        source: 'manual-test',
-      }),
+    parameter: {
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'you@example.com',
+      interest: 'rings',
+      source: 'manual-test',
     },
   };
   var result = doPost(e);

@@ -1449,11 +1449,19 @@ async function submitWaitlist(e){
   if(WAITLIST_API_URL){
     btn.disabled=true; btn.textContent='Adding you...';
     try{
+      /* Form-urlencoded avoids CORS preflight that breaks fetch() to script.google.com in many browsers */
+      const body=new URLSearchParams();
+      body.set('firstName',f);
+      body.set('lastName',l);
+      body.set('email',mail);
+      body.set('interest',intr);
+      body.set('source','saroraweb');
       const res=await fetch(WAITLIST_API_URL,{
         method:'POST',
         mode:'cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify({ firstName:f, lastName:l, email:mail, interest:intr, source:'saroraweb' })
+        cache:'no-store',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:body.toString()
       });
       const raw=await res.text();
       let json=null;
