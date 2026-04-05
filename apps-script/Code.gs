@@ -167,11 +167,38 @@ function buildWaitlistEmailPlain(firstName, interestKey) {
   );
 }
 
+/**
+ * GET with no query → simple HTML (health check in browser).
+ * GET ?stats=count → JSON only: { status, count } — number of data rows in Waitlist (excludes header). No names/emails.
+ * Optional: set STATS_SECRET in Project Settings → Script properties; then require ?stats=count&key=YOUR_SECRET
+ */
 function doGet(e) {
+  e = e || { parameter: {} };
+  var p = e.parameter || {};
+  if (p.stats === 'count') {
+    var secret = PropertiesService.getScriptProperties().getProperty('STATS_SECRET');
+    if (secret && String(secret).length > 0 && p.key !== secret) {
+      return jsonOut({ status: 'error', message: 'Invalid or missing key for stats' });
+    }
+    try {
+      var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      var sh = ss.getSheetByName(SHEET_NAME);
+      if (!sh) {
+        return jsonOut({ status: 'ok', count: 0 });
+      }
+      var last = sh.getLastRow();
+      var count = last <= 1 ? 0 : last - 1;
+      return jsonOut({ status: 'ok', count: count });
+    } catch (err) {
+      Logger.log('doGet stats: ' + err.message);
+      return jsonOut({ status: 'error', message: String(err.message || err) });
+    }
+  }
   return HtmlService.createHtmlOutput(
     '<h2>Sarora Waitlist API</h2>' +
       '<p>Web app is running.</p>' +
-      '<p>POST <code>application/x-www-form-urlencoded</code> (recommended) or JSON body with: firstName, lastName, email, interest</p>'
+      '<p>POST <code>application/x-www-form-urlencoded</code> (recommended) or JSON body with: firstName, lastName, email, interest</p>' +
+      '<p>GET <code>?stats=count</code> → JSON aggregate signup count (no personal data).</p>'
   );
 }
 
