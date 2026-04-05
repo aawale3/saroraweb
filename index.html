@@ -395,34 +395,45 @@
     }
     .product-card:hover .product-link { opacity: 1; transform: translateY(0); }
 
-    /* ===== 3D RING ===== */
+    /* ===== SIGNATURE RING (static showcase) ===== */
     .ring-section {
-      background: var(--cream-mid);
+      background: linear-gradient(165deg, var(--cream-mid) 0%, var(--cream-dark) 45%, var(--cream-mid) 100%);
       display: flex; align-items: center; justify-content: center;
-      gap: 80px; flex-wrap: wrap; padding: 120px 56px;
+      gap: clamp(40px, 6vw, 88px); flex-wrap: wrap;
+      padding: 120px 56px;
     }
-
-    .ring-viewer-wrap { display: flex; flex-direction: column; align-items: center; }
-    #ring-canvas {
-      width: min(92vw, 400px);
-      height: min(92vw, 400px);
-      max-width: 400px;
-      max-height: 400px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, #f5ede0 0%, #e8d9c4 60%, #d4c5a8 100%);
+    .ring-showcase-col {
+      flex: 1 1 320px;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .ring-showcase-figure {
+      margin: 0;
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
       border: 1px solid var(--border);
-      cursor: grab; display: block;
-      box-shadow: 0 20px 60px var(--shadow), 0 4px 16px rgba(201,168,76,.12);
+      box-shadow:
+        0 28px 72px var(--shadow),
+        0 0 0 1px rgba(201,168,76,.08) inset;
+      background: #faf8f5;
     }
-    #ring-canvas:active { cursor: grabbing; }
-    .ring-hint {
-      margin-top: 20px; font-size: 10px; letter-spacing: .3em;
+    .ring-showcase-figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+      vertical-align: middle;
+    }
+    .ring-showcase-note {
+      margin-top: 18px;
+      font-size: 10px; font-weight: 500; letter-spacing: .32em;
       color: var(--gold-dark); text-transform: uppercase;
-      display: flex; align-items: center; gap: 8px;
+      text-align: center;
     }
-    .ring-hint svg { animation: rotateSlow 4s linear infinite; }
 
-    .ring-info { max-width: 460px; }
+    .ring-info { flex: 1 1 300px; max-width: 480px; }
     .ring-features { display: flex; flex-direction: column; gap: 0; margin: 36px 0 40px; }
     .ring-feature {
       display: flex; align-items: flex-start; gap: 20px;
@@ -779,10 +790,7 @@
       .countdown-timer { gap: 12px; flex-wrap: wrap; justify-content: center; }
       .countdown-num { font-size: 36px; min-width: 52px; }
       .countdown-sep { margin-bottom: 12px; font-size: 28px; }
-      #ring-canvas {
-        width: min(88vw, 320px);
-        height: min(88vw, 320px);
-      }
+      .ring-showcase-col { max-width: 100%; }
       .lightbox {
         padding: max(16px, var(--safe-top)) max(16px, var(--safe-right)) max(16px, var(--safe-bottom)) max(16px, var(--safe-left));
       }
@@ -920,7 +928,7 @@
 
   <ul class="nav-links">
     <li><a href="#collections">Collections</a></li>
-    <li><a href="#ring3d">3D Viewer</a></li>
+    <li><a href="#signature-ring">Signature Ring</a></li>
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#waitlist">Join Waitlist</a></li>
   </ul>
@@ -932,7 +940,7 @@
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="#collections" onclick="toggleMenu()">Collections</a>
-  <a href="#ring3d" onclick="toggleMenu()">3D Ring Viewer</a>
+  <a href="#signature-ring" onclick="toggleMenu()">Signature Ring</a>
   <a href="#gallery" onclick="toggleMenu()">Gallery</a>
   <a href="#waitlist" onclick="toggleMenu()">Join Waitlist</a>
 </div>
@@ -1147,23 +1155,20 @@
   </div>
 </section>
 
-<!-- ===== 3D RING ===== -->
-<section class="ring-section" id="ring3d">
-  <div class="ring-viewer-wrap reveal">
-    <canvas id="ring-canvas"></canvas>
-    <div class="ring-hint">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 2v20M2 12h20"/>
-      </svg>
-      Drag to rotate · Pinch to zoom
-    </div>
+<!-- ===== SIGNATURE RING ===== -->
+<section class="ring-section" id="signature-ring">
+  <div class="ring-showcase-col reveal">
+    <figure class="ring-showcase-figure">
+      <img src="images/ring-3d-poster.png" alt="Sarora gold ring — sculptural band with Sarora engraving" width="800" height="800" decoding="async" loading="lazy" />
+    </figure>
+    <p class="ring-showcase-note">Studio reference · 18K gold finish</p>
   </div>
 
   <div class="ring-info reveal">
-    <span class="section-label">✦ Interactive 3D Preview</span>
+    <span class="section-label">✦ The Signature Ring</span>
     <div class="gold-rule"></div>
     <h2 class="section-title">Every Detail,<br><em>Perfected</em></h2>
-    <p class="section-desc">Explore our signature rings in 3D. Drag to rotate and see every facet — crafted with precision that photographs alone cannot capture.</p>
+    <p class="section-desc">Bold sculptural weight, a mirror-polished surface, and hallmarked quality you can see in the light. Each piece is finished by hand—made to feel as exceptional as it looks.</p>
     <div class="ring-features">
       <div class="ring-feature">
         <div class="ring-feature-icon">◈</div>
@@ -1258,7 +1263,7 @@
       <div class="gallery-hover"><span>✦ View</span></div>
     </div>
     <div class="gallery-item" onclick="openLightbox(8)">
-      <img src="images/gallery-10.jpg" alt="SARORA Pendant Necklace" />
+      <img src="images/pendent%20neclace.png" alt="SARORA pendant necklace — box chain and slider bead" />
       <div class="gallery-hover"><span>✦ View</span></div>
     </div>
   </div>
@@ -1377,7 +1382,6 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /* ===== CURSOR (desktop / fine pointer only — hidden on touch via CSS) ===== */
 (function initCursor(){
@@ -1472,7 +1476,7 @@ const galleryImages = [
   { src:'images/rings-stack.jpg',    caption:'Stacked Ring Collection' },
   { src:'images/bracelet-clasp.jpg', caption:'SARORA Signature Clasp Detail' },
   { src:'images/moon-closeup.jpg',   caption:'Moon Pendant – Close Up' },
-  { src:'images/gallery-10.jpg',     caption:'SARORA Pendant Necklace – Premium Collection' },
+  { src:'images/pendent%20neclace.png', caption:'SARORA Pendant Necklace – Box Chain' },
 ];
 let currentImg = 0;
 
@@ -1506,87 +1510,6 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape')     closeLightboxBtn();
 });
 
-/* ===== 3D RING (cream-warm lighting) ===== */
-(function(){
-  const canvas=document.getElementById('ring-canvas');
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(canvas.clientWidth,canvas.clientHeight);
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.6;
-
-  const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(38,1,.1,100);
-  camera.position.set(0,0,4.8);
-
-  const ringGroup=new THREE.Group();
-  scene.add(ringGroup);
-
-  /* --- Main band --- */
-  const goldMat=new THREE.MeshStandardMaterial({ color:0xC9A84C, metalness:1.0, roughness:.1, envMapIntensity:1.3 });
-  const band=new THREE.Mesh(new THREE.TorusGeometry(1.0,.18,64,200),goldMat);
-  ringGroup.add(band);
-
-  /* --- Inner ring --- */
-  const innerMat=new THREE.MeshStandardMaterial({ color:0x9E7A2E, metalness:1.0, roughness:.2 });
-  ringGroup.add(new THREE.Mesh(new THREE.TorusGeometry(1.0,.14,32,120),innerMat));
-
-  /* --- Prongs --- */
-  const prongMat=new THREE.MeshStandardMaterial({ color:0xC9A84C, metalness:1.0, roughness:.08 });
-  [0,Math.PI/2,Math.PI,3*Math.PI/2].forEach(a=>{
-    const p=new THREE.Mesh(new THREE.CylinderGeometry(.024,.018,.3,8),prongMat);
-    p.position.set(Math.cos(a)*.28,.42,Math.sin(a)*.28);
-    p.rotation.z=Math.cos(a)*.3; p.rotation.x=Math.sin(a)*.3;
-    ringGroup.add(p);
-  });
-
-  /* --- Setting base --- */
-  ringGroup.add(Object.assign(new THREE.Mesh(new THREE.CylinderGeometry(.3,.26,.1,32),prongMat),{position:new THREE.Vector3(0,.28,0)}));
-
-  /* --- Gem --- */
-  const gemMat=new THREE.MeshStandardMaterial({ color:0xF0EEFF, metalness:.0, roughness:.0, transparent:true, opacity:.92 });
-  const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.27,1),gemMat);
-  gem.position.y=.46; gem.rotation.y=Math.PI/4; ringGroup.add(gem);
-
-  /* --- Etch lines --- */
-  [-.08,.08].forEach(off=>{
-    const e=new THREE.Mesh(new THREE.TorusGeometry(1.0,.005,16,200),new THREE.MeshStandardMaterial({color:0x7A5020,metalness:1,roughness:.3}));
-    e.position.x=off; e.rotation.y=Math.PI/2; ringGroup.add(e);
-  });
-
-  ringGroup.rotation.x=.35; ringGroup.rotation.z=.1;
-
-  /* --- Lights (warm cream palette) --- */
-  scene.add(new THREE.AmbientLight(0xFFF8E8,.8));
-  const key=new THREE.DirectionalLight(0xFFE8A0,4.0); key.position.set(3,5,3); scene.add(key);
-  const fill=new THREE.DirectionalLight(0xF8E8D0,1.5); fill.position.set(-4,1,2); scene.add(fill);
-  const rim=new THREE.DirectionalLight(0xFFD080,2.0); rim.position.set(0,-3,-4); scene.add(rim);
-  const top=new THREE.PointLight(0xFFECC0,2.5,8); top.position.set(0,4,1); scene.add(top);
-  const gemLight=new THREE.PointLight(0xFFF0D0,3.0,3); gemLight.position.set(0,1.5,.5); scene.add(gemLight);
-
-  /* --- Drag --- */
-  let isDragging=false,prevX=0,prevY=0,velX=0,velY=0,tRotY=0,tRotX=.35,cRotY=0,cRotX=.35,autoRotate=true;
-  canvas.addEventListener('mousedown',e=>{ isDragging=true; autoRotate=false; prevX=e.clientX; prevY=e.clientY; velX=velY=0; });
-  window.addEventListener('mouseup',()=>isDragging=false);
-  window.addEventListener('mousemove',e=>{ if(!isDragging)return; velX=(e.clientX-prevX)*.012; velY=(e.clientY-prevY)*.008; tRotY+=velX; tRotX=Math.max(-1.2,Math.min(1.2,tRotX+velY)); prevX=e.clientX; prevY=e.clientY; });
-  canvas.addEventListener('touchstart',e=>{ isDragging=true; autoRotate=false; prevX=e.touches[0].clientX; prevY=e.touches[0].clientY; },{passive:true});
-  window.addEventListener('touchend',()=>isDragging=false);
-  window.addEventListener('touchmove',e=>{ if(!isDragging)return; velX=(e.touches[0].clientX-prevX)*.012; velY=(e.touches[0].clientY-prevY)*.008; tRotY+=velX; tRotX=Math.max(-1.2,Math.min(1.2,tRotX+velY)); prevX=e.touches[0].clientX; prevY=e.touches[0].clientY; },{passive:true});
-
-  function animate(){
-    requestAnimationFrame(animate);
-    if(autoRotate){ tRotY+=.004; }
-    else if(!isDragging){ velX*=.92; velY*=.92; tRotY+=velX; tRotX+=velY; if(Math.abs(velX)<.0001&&Math.abs(velY)<.0001) autoRotate=true; }
-    cRotY+=(tRotY-cRotY)*.1; cRotX+=(tRotX-cRotX)*.1;
-    ringGroup.rotation.y=cRotY; ringGroup.rotation.x=cRotX;
-    const t=Date.now()*.001;
-    gemLight.intensity=2.5+Math.sin(t*2.3)*.8;
-    gem.rotation.y+=.003;
-    renderer.render(scene,camera);
-  }
-  animate();
-  window.addEventListener('resize',()=>{ const w=canvas.clientWidth; renderer.setSize(w,w); });
-})();
 </script>
 </body>
 </html>
