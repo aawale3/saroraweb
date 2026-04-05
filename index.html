@@ -22,8 +22,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="images/hero.jpg" fetchpriority="high" />
-  <!-- If the site is served over HTTPS, upgrade any accidental http subresources -->
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -165,12 +163,16 @@
       flex: 1; position: relative; min-height: 100vh;
       overflow: hidden;
       background-color: var(--cream-dark);
-      /* CSS background paints reliably on mobile WebViews; <img> alone was flaky in Safari */
-      background-image: url('images/hero.jpg');
-      background-size: cover;
-      background-position: center top;
-      background-repeat: no-repeat;
-      -webkit-transform: translateZ(0);
+    }
+    .hero-image-photo {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
     }
     .hero-image-overlay {
       position: absolute; inset: 0;
@@ -200,7 +202,6 @@
       opacity: 0; animation: fadeUp .8s .2s forwards;
     }
     .hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: var(--gold); flex-shrink: 0; }
-    .hero-eyebrow-br { display: none; }
 
     .hero-title {
       font-family: 'Cormorant Garamond', serif;
@@ -787,8 +788,9 @@
         min-height: 0;
         height: clamp(220px, 38vh, 360px);
         max-height: 360px;
-        /* Phone/tablet: frame the middle of the photo (desktop keeps center top above) */
-        background-position: center center;
+      }
+      .hero-image-side .hero-image-photo {
+        object-position: center center;
       }
       .about-section { flex-direction: column; }
       .about-photo { width: 100%; min-height: 400px; }
@@ -868,19 +870,16 @@
         padding-bottom: 40px;
       }
       .hero-eyebrow {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
-        letter-spacing: 0.28em;
-        line-height: 1.45;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: 0.22em;
+        line-height: 1.35;
         margin-bottom: 22px;
         max-width: 100%;
       }
       .hero-eyebrow::before {
-        width: 56px;
-      }
-      .hero-eyebrow-br {
-        display: block;
+        width: 40px;
       }
       .hero-title {
         font-size: clamp(36px, 10.5vw, 52px);
@@ -992,11 +991,22 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="home">
-  <div class="hero-image-side" role="img" aria-label="Sarora Jewelry hero photograph">
+  <div class="hero-image-side">
+    <img
+      class="hero-image-photo"
+      src="images/hero.jpg"
+      alt="Sarora Jewelry"
+      width="1200"
+      height="1600"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      onerror="this.onerror=null;this.src='images/flatlay.jpg';"
+    />
     <div class="hero-image-overlay"></div>
   </div>
   <div class="hero-content">
-    <span class="hero-eyebrow">Introducing<br class="hero-eyebrow-br" aria-hidden="true" /> Sarora Jewelry</span>
+    <span class="hero-eyebrow">Introducing Sarora Jewelry</span>
     <h1 class="hero-title">Let Your <em>Jewelry</em></h1>
     <div class="hero-brand" style="font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,64px);font-weight:600;letter-spacing:.14em;color:var(--brown-deep);margin-bottom:28px;opacity:0;animation:fadeUp .9s .6s forwards">Speak Volumes</div>
     <div class="hero-rule"></div>
@@ -1447,17 +1457,6 @@
     el.addEventListener('mouseenter',()=>{ cursor.style.width='14px'; cursor.style.height='14px'; cursorRing.style.width='48px'; cursorRing.style.height='48px'; });
     el.addEventListener('mouseleave',()=>{ cursor.style.width='8px'; cursor.style.height='8px'; cursorRing.style.width='32px'; cursorRing.style.height='32px'; });
   });
-})();
-
-/* ===== HERO BG FALLBACK (if hero.jpg missing) ===== */
-(function () {
-  var el = document.querySelector('.hero-image-side');
-  if (!el) return;
-  var probe = new Image();
-  probe.onerror = function () {
-    el.style.backgroundImage = "url('images/flatlay.jpg')";
-  };
-  probe.src = 'images/hero.jpg';
 })();
 
 /* ===== NAV ===== */
